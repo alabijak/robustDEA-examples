@@ -8,7 +8,14 @@ public class PolishAirportsExample {
     private List<String> alternativeNames;
 
     public static void main(String[] args) {
-        //TODO: describe
+        // The example presents the application of DEA robustness methods for standard DEA problems
+        // with ratio-based efficiency model.
+        // The data set represent 11 polish airports and is gathered from the paper
+        // https://doi.org/10.1016/j.omega.2016.03.003
+        //
+        // This data set consists of 11 polish airports with performances described with 4 inputs and 2 outputs.
+        //
+        // The methods are run with and without the custom weight constraints.
 
         var example = new PolishAirportsExample();
         System.out.println("Result of the analysis without weight constraints");

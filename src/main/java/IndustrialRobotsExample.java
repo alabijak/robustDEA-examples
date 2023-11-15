@@ -6,13 +6,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
-public class IndustialRobotsExample {
+public class IndustrialRobotsExample {
     private CCRImpreciseProblemData data;
     private List<String> alternativeNames;
 
     public static void main(String[] args) {
-        //TODO: describe
-        var example = new IndustialRobotsExample();
+        // The example presents the application of DEA robustness methods for problem with imprecise information
+        // and ratio-based efficiency model.
+        // The data set represent 27 industrial robots and is gathered from the paper
+        // https://doi.org/10.1007/s12351-023-00755-z
+        //
+        // This data set consists of 27 industrial robots with performances described with 2 inputs and 2 outputs.
+        // Input reputation is ordinal. The performances of output capacity are interval.
+        // there ale also some custom weight constraint defined.
+
+        var example = new IndustrialRobotsExample();
         example.runExample();
 
     }

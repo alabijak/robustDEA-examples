@@ -12,10 +12,27 @@ public class PolishHealthcareSystemsExample {
     private List<String> alternativeNames;
 
     public static void main(String[] args) {
-        //TODO: describe
+        // The example presents the application of DEA robustness methods
+        // for problem with hierarchical structure of inputs and outputs
+        // and value-based efficiency model.
+        // The data set represent efficiency analysis of healthcare systems in Polish voivideships
+        // and is gathered from the paper https://doi.org/10.3390/app13116406
+        //
+        // This data set consists of 16 Polish voivideships with performances described with 3 inputs and 6 outputs
+        // organized into 3 categories: inhabitants' health improvement, effective financial management and customers' satisfaction.
+        //
+        // The methods are run for two levels of the hierarchy: comprehensive_analysis and health_improvement
+        // they may be also analogously run for levels of finances or satisfaction
+
         var example = new PolishHealthcareSystemsExample();
         example.initializeData();
+        System.out.println("Comprehensive analysis level results:");
+        System.out.println("=====================================================");
         example.runExample("comprehensive_analysis");
+        System.out.println("=====================================================");
+
+        System.out.println("Inhabitants' health improvement level results:");
+        System.out.println("=====================================================");
         example.runExample("health_improvement");
 
     }
@@ -63,7 +80,7 @@ public class PolishHealthcareSystemsExample {
                 new double[]{32.22, 9.1, 0.79, 44.3, 3.64, 25.84},
                 new double[]{38.73, 1.9, -4.31, 45.8, 3.84, 20.51}
         };
-        var hierarchy = new HierarchyNode("index");
+        var hierarchy = new HierarchyNode("comprehensive_analysis");
         var health = new HierarchyNode("health_improvement");
         hierarchy.addChild(health);
         health.addChild(new HierarchyNode("h1"));

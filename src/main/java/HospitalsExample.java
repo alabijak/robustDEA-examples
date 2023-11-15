@@ -14,7 +14,7 @@ public class HospitalsExample {
     public static void main(String[] args) {
         // The example presents the application of DEA robustness methods for problem with imprecise information
         // and value-based efficiency model.
-        // The data set represent the exeplary data from in Section 2.2 of the paper
+        // The data set represent the exemplary data from in Section 2.2 of the paper
         // "Robustness Analysis for Imprecise Additive Value Efficiency Analysis with an Application to Evaluation of Special Economic Zones in Poland"
         //
         // This data set consists of 12 hospital with performances described with 2 inputs and 2 outputs.
