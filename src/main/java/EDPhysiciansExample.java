@@ -12,7 +12,14 @@ public class EDPhysiciansExample {
     private List<String> alternativeNames;
 
     public static void main(String[] args) {
-        //TODO: describe
+        // The example presents the application of DEA robustness methods for value-based efficiency model
+        // for efficiency analysis of 20 Emergency Department physicians.
+        // The data set is described in Section 3 of the paper https://doi.org/10.1111/itor.13099
+        //
+        // This data set consists of 20 physicians with performances described with 3 inputs and 1 output
+        // for all inputs and outputs there is a marginal value function defined,
+        // the weights for all factors are restricted to be not greater than 0.5
+
         var example = new EDPhysiciansExample();
         example.runExample();
 
@@ -139,22 +146,12 @@ public class EDPhysiciansExample {
     }
 
     private void addWeightConstraints() {
-//        data.addWeightConstraint(new Constraint(
-//                ConstraintOperator.GEQ, 0, Map.of("i1", 2.0, "i2", -1.0)
-//        ));
-
-        for (var factor : List.of("i1", "i2", "i3", "o1")
-        ) {
+        for (var factor : List.of("i1", "i2", "i3", "o1")) {
 
             data.addWeightConstraint(new Constraint(
                     ConstraintOperator.LEQ, 0.5, Map.of(factor, 1.0)
             ));
         }
-
-//
-//        data.addWeightConstraint(new Constraint(
-//                ConstraintOperator.LEQ, 0.8, Map.of("i1", 1.0, "i2", 1.0, "i3", 1.0)
-//        ));
     }
 
     private void addFunctionShapes() {

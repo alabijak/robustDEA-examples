@@ -9,16 +9,22 @@ public class PolishAirportsExample {
 
     public static void main(String[] args) {
         //TODO: describe
+
         var example = new PolishAirportsExample();
-        example.runExample();
+        System.out.println("Result of the analysis without weight constraints");
+        example.runExample(false);
+        System.out.println();
+
+        System.out.println("Result of the analysis with custom weight constraints");
+        example.runExample(true);
 
     }
 
-    private void runExample() {
+    private void runExample(boolean withWeightConstraints) {
         var printResultUtils = new PrintResultUtils();
         initializeData();
-        //TODO: describe
-//        addWeightConstraints();
+        if (withWeightConstraints)
+            addWeightConstraints();
         var extremeEfficiencies = new CCRExtremeEfficiencies();
         var minEfficiencies = extremeEfficiencies.minEfficiencyForAll(data);
         var maxEfficiencies = extremeEfficiencies.maxEfficiencyForAll(data);
