@@ -17,7 +17,7 @@ public class HospitalsExample {
         // The data set represent the exemplary data from in Section 2.2 of the paper
         // "Robustness Analysis for Imprecise Additive Value Efficiency Analysis with an Application to Evaluation of Special Economic Zones in Poland"
         //
-        // This data set consists of 12 hospital with performances described with 2 inputs and 2 outputs.
+        // This data set consists of 12 hospital with performances described with 4 inputs and 2 outputs.
         // Input i2 is ordinal. The performances at all other factors are interval.
         // For all inputs and outputs (except the ordinal i2) there is an admissible marginal value function range defined.
         // the weights for all factors are restricted to be within the range [0.083, 0.250]
