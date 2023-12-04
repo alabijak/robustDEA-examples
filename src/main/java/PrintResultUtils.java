@@ -1,13 +1,14 @@
-import joinery.DataFrame;
 import put.dea.robustness.DistributionResult;
+import tech.tablesaw.api.Table;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class PrintResultUtils {
-    private DecimalFormat decimalFormat;
+    private final DecimalFormat decimalFormat;
 
     public PrintResultUtils() {
         this.decimalFormat = new DecimalFormat("0.000");
@@ -48,26 +49,28 @@ public class PrintResultUtils {
 
     }
 
-    public void printDistribution(DataFrame<Double> distribution,
+    public void printDistribution(Table distribution,
                                   String distributionTitle,
                                   List<String> alternativeNames,
                                   List<String> columnNames) {
         System.out.println(distributionTitle);
-        var maxHeaderLength = columnNames.stream().map(String::length).max(Comparator.naturalOrder()).get();
+        int maxHeaderLength = columnNames.stream().map(String::length).max(Comparator.naturalOrder()).orElseThrow();
         maxHeaderLength = Math.max(maxHeaderLength, 5);
         var headerFormat = String.format("%%%ds", maxHeaderLength);
-        var altNameMaxLen = alternativeNames.stream().map(String::length).max(Comparator.naturalOrder()).get();
+        var altNameMaxLen = alternativeNames.stream().map(String::length).max(Comparator.naturalOrder()).orElseThrow();
         var headerBlankFormat = String.format("%%%ds ", altNameMaxLen);
         System.out.println(String.format(headerBlankFormat, " ") +
                 String.join(" ", columnNames.stream()
                         .map(x -> String.format(headerFormat, x))
                         .toList()));
         for (int i = 0; i < alternativeNames.size(); i++) {
+            var row = distribution.row(i);
             System.out.printf(headerBlankFormat + "%s%n",
                     alternativeNames.get(i),
                     String.join(" ",
-                            distribution.row(i).stream()
-                                    .map(decimalFormat::format)
+                            IntStream.range(0, distribution.columnCount())
+                                    .mapToDouble(row::getDouble)
+                                    .mapToObj(decimalFormat::format)
                                     .map(x -> String.format(headerFormat, x))
                                     .toList()));
         }

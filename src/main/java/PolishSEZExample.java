@@ -31,7 +31,7 @@ public class PolishSEZExample {
     private void runExample() {
         var printResultUtils = new PrintResultUtils();
         initializeData();
-        var extremeDistances = new ImpreciseVDEAExtremeDistances(1.0, 0.0, 1.0);
+        var extremeDistances = new ImpreciseVDEAExtremeDistances(1.0001, 0.0, 1.0);
         var minDistances = extremeDistances.minDistanceForAll(data);
         var maxDistances = extremeDistances.maxDistanceForAll(data);
         var smaaDistance = new ImpreciseVDEASmaaDistance(100, 10);
@@ -49,10 +49,10 @@ public class PolishSEZExample {
                 alternativeNames,
                 distributionHeader);
 
-        var extremeEfficiencies = new ImpreciseVDEAExtremeEfficiencies();
+        var extremeEfficiencies = new ImpreciseVDEAExtremeEfficiencies(1.0001, 0.0, 1.0);
         var minEfficiencies = extremeEfficiencies.minEfficiencyForAll(data);
         var maxEfficiencies = extremeEfficiencies.maxEfficiencyForAll(data);
-        var smaaEfficiency = new ImpreciseVDEASmaaEfficiency(100, 10);
+        var smaaEfficiency = new ImpreciseVDEASmaaEfficiency(1000, 10);
         var efficiencyDistribution = smaaEfficiency.efficiencyDistribution(data);
 
         printResultUtils.printExtremeValuesAndDistribution(minEfficiencies,
@@ -63,7 +63,7 @@ public class PolishSEZExample {
                 alternativeNames,
                 distributionHeader);
 
-        var extremeRanks = new ImpreciseVDEAExtremeRanks();
+        var extremeRanks = new ImpreciseVDEAExtremeRanks(1.0001, 0.0, 1.0);
         var minRanks = extremeRanks.minRankForAll(data);
         var maxRanks = extremeRanks.maxRankForAll(data);
         var smaaRanks = new ImpreciseVDEASmaaRanks(100);
@@ -79,7 +79,7 @@ public class PolishSEZExample {
                 alternativeNames,
                 IntStream.range(1, alternativeNames.size() + 1).mapToObj(Objects::toString).toList());
 
-        var preferenceRelations = new ImpreciseVDEAPreferenceRelations();
+        var preferenceRelations = new ImpreciseVDEAPreferenceRelations(1.0001, 0.0, 1.0);
         var necessaryRelations = preferenceRelations.checkNecessaryPreferenceForAll(data);
         var possibleRelations = preferenceRelations.checkPossiblePreferenceForAll(data);
         printResultUtils.printPreferenceRelations(necessaryRelations,
@@ -180,10 +180,10 @@ public class PolishSEZExample {
         var names = List.of("area", "expenditures", "jobs", "financial_result");
         for (var factor : names) {
             data.getWeightConstraints().add(new Constraint(
-                    ConstraintOperator.GEQ, 1.0 / 6.0, Map.of(factor, 1.0)
+                    ConstraintOperator.GEQ, 0.16667, Map.of(factor, 1.0)
             ));
             data.getWeightConstraints().add(new Constraint(
-                    ConstraintOperator.LEQ, 1.0 / 3.0, Map.of(factor, 1.0)
+                    ConstraintOperator.LEQ, 0.33333, Map.of(factor, 1.0)
             ));
         }
     }
