@@ -38,10 +38,14 @@ public class PolishHealthcareSystemsExample {
     }
 
     private void initializeData() {
+        //initialize alternatives' (polish voivodeships') names
+        //for printing the results
         alternativeNames = List.of(
                 "ZPM", "POM", "WM", "PDL", "LBU", "WLKP", "KP", "MAZ",
                 "LBL", "DSL", "OPO", "LDZ", "SL", "SW", "MLP", "PKR"
         );
+
+        //initialize the array with inputs' performances
         var inputs = new double[][]{
                 new double[]{4.05, 46.1, 19.23},
                 new double[]{5.36, 38.9, 27.04},
@@ -59,9 +63,9 @@ public class PolishHealthcareSystemsExample {
                 new double[]{5.79, 49.5, 12.44},
                 new double[]{5.61, 43.7, 18.27},
                 new double[]{5.76, 48, 14.39}
-
         };
 
+        //initialize the array with outputs' performances
         var outputs = new double[][]{
                 new double[]{44.44, 17.6, -1.5, 46.9, 3.55, 9.3},
                 new double[]{45.31, 21.3, 0.08, 51.3, 3.82, 33.33},
@@ -80,40 +84,70 @@ public class PolishHealthcareSystemsExample {
                 new double[]{32.22, 9.1, 0.79, 44.3, 3.64, 25.84},
                 new double[]{38.73, 1.9, -4.31, 45.8, 3.84, 20.51}
         };
+
+        //defining the hierarchy of factors (inputs and outsputs)
+
+        //defininf the hierarchy root (comprehensive_analysis)
         var hierarchy = new HierarchyNode("comprehensive_analysis");
+
+        //adding the node "health_improvement" under the root
         var health = new HierarchyNode("health_improvement");
         hierarchy.addChild(health);
+
+        //adding the three factors (h1, h2, h3) under the "health_improvement" category
         health.addChild(new HierarchyNode("h1"));
         health.addChild(new HierarchyNode("h2"));
         health.addChild(new HierarchyNode("h3"));
 
+        //adding the node "finances" under the root
         var finances = new HierarchyNode("finances");
         hierarchy.addChild(finances);
+
+        //adding the three factors (f1, f2, f3) under the "finances" category
         finances.addChild(new HierarchyNode("f1"));
         finances.addChild(new HierarchyNode("f2"));
         finances.addChild(new HierarchyNode("f3"));
 
+        //adding the node "satisfaction" under the root
         var satisfaction = new HierarchyNode("satisfaction");
         hierarchy.addChild(satisfaction);
+
+        //adding the three factors (s1, s2, s3) under the "satisfaction" category
         satisfaction.addChild(new HierarchyNode("s1"));
         satisfaction.addChild(new HierarchyNode("s2"));
         satisfaction.addChild(new HierarchyNode("s3"));
 
+        //creating the data set by passing the inputs' and outputs' performances,
+        //inputs' and outputs' names
+        //and hierarchy of indicators
         data = new HierarchicalVDEAProblemData(inputs, outputs,
                 List.of("h2", "f2", "s1"), List.of("h1", "h3", "f1", "f3", "s2", "s3"),
                 hierarchy);
 
+        //defining the shapes of the marginal value functions for all inputs and outputs
         addFunctionShapes();
+
+        //adding the custom weight restrictions
         addWeightConstraints();
     }
 
     private void runExample(String hierarchyLevel) {
         var printResultUtils = new PrintResultUtils();
+
+        //calculating the extreme distances to the best DMU for all voivodeships
+        //using the VDEA model with hierarchical structure of indicators
+        //the methods take the data set and the name of the selected hierachy node
+        //as parameters
         var extremeDistances = new HierarchicalVDEAExtremeDistances();
         var minDistances = extremeDistances.minDistanceForAll(data, hierarchyLevel);
         var maxDistances = extremeDistances.maxDistanceForAll(data, hierarchyLevel);
+
+        //calculating the distribution of the distance to the best voivodeship for all analyzed units
+        //using 100 randomly generated samples and 10 distance intervals.
         var smaaDistance = new HierarchicalVDEASmaaDistance(100, 10);
         var distanceDistribution = smaaDistance.distanceDistribution(data, hierarchyLevel);
+
+        //printing results of the extreme, expected distances and distance distribution
         var distributionHeader = new ArrayList<String>();
         distributionHeader.add("[0.0-0.1]");
         for (int i = 1; i < 10; i++) {
@@ -127,12 +161,18 @@ public class PolishHealthcareSystemsExample {
                 alternativeNames,
                 distributionHeader);
 
+        //calculating the extreme efficiency scores for all voivodeships
         var extremeEfficiencies = new HierarchicalVDEAExtremeEfficiencies();
         var minEfficiencies = extremeEfficiencies.minEfficiencyForAll(data, hierarchyLevel);
         var maxEfficiencies = extremeEfficiencies.maxEfficiencyForAll(data, hierarchyLevel);
+
+        //calculating the distribution of the efficiency scores (and expected efficiencies)
+        //for all voivodeships
+        //using 100 randomly generated samples and 10 efficiency intervals.
         var smaaEfficiency = new HierarchicalVDEASmaaEfficiency(100, 10);
         var efficiencyDistribution = smaaEfficiency.efficiencyDistribution(data, hierarchyLevel);
 
+        //printing the results of the extreme efficiencies and efficiency distribution to the console
         printResultUtils.printExtremeValuesAndDistribution(minEfficiencies,
                 maxEfficiencies, efficiencyDistribution,
                 "Extreme efficiencies:",
@@ -141,12 +181,17 @@ public class PolishHealthcareSystemsExample {
                 alternativeNames,
                 distributionHeader);
 
+        //calculating the extreme efficiency ranks for all voivodeships
         var extremeRanks = new HierarchicalVDEAExtremeRanks();
         var minRanks = extremeRanks.minRankForAll(data, hierarchyLevel);
         var maxRanks = extremeRanks.maxRankForAll(data, hierarchyLevel);
+
+        //calculating the distribution of the efficiency ranks (and expected ranks)
+        //for all voivodeships using 100 randomly generated samples.
         var smaaRanks = new HierarchicalVDEASmaaRanks(100);
         var rankDistribution = smaaRanks.rankDistribution(data, hierarchyLevel);
 
+        //printing the results of the extreme ranks and rank distribution to the console
         printResultUtils.printExtremeValuesAndDistribution(
                 minRanks.stream().mapToDouble(x -> x).boxed().toList(),
                 maxRanks.stream().mapToDouble(x -> x).boxed().toList(),
@@ -157,13 +202,20 @@ public class PolishHealthcareSystemsExample {
                 alternativeNames,
                 IntStream.range(1, alternativeNames.size() + 1).mapToObj(Objects::toString).toList());
 
+        //verification of the presence of necessary and possible efficiency preference relations
+        //for all pairs of voivodeships
         var preferenceRelations = new HierarchicalVDEAPreferenceRelations();
         var necessaryRelations = preferenceRelations.checkNecessaryPreferenceForAll(data, hierarchyLevel);
         var possibleRelations = preferenceRelations.checkPossiblePreferenceForAll(data, hierarchyLevel);
+
+        //printing the preference relations matrix to the console
         printResultUtils.printPreferenceRelations(necessaryRelations,
                 possibleRelations,
                 alternativeNames,
                 "Pairwise efficiency preference relations:");
+
+        //calculating the pairwise efficiency outranking indices for all pairs of voivodeships
+        //and printing them to the console
         var smaaPreferences = new HierarchicalVDEASmaaPreferenceRelations(100);
         printResultUtils.printDistribution(smaaPreferences.peoi(data, hierarchyLevel),
                 "Pairwise efficiency outranking indices:",
@@ -172,6 +224,9 @@ public class PolishHealthcareSystemsExample {
     }
 
     private void addFunctionShapes() {
+        //defining the shape of the value function for output h1
+        //by defining four characteristic points:
+        //[32, 0.0], [38, 0.3], [46, 0.9], [51, 1.0]
         data.setFunctionShape("h1", List.of(
                 new Pair<>(32.0, 0.0),
                 new Pair<>(38.0, 0.3),
@@ -179,6 +234,8 @@ public class PolishHealthcareSystemsExample {
                 new Pair<>(51.0, 1.0)
         ));
 
+        //defining the shapes of marginal value functions for all remaining inputs and outputs
+        //by setting the characteristic points of the functions.
         data.setFunctionShape("h2", List.of(
                 new Pair<>(4.0, 1.0),
                 new Pair<>(4.6, 0.9),
@@ -236,6 +293,8 @@ public class PolishHealthcareSystemsExample {
     }
 
     private void addWeightConstraints() {
+        //defining the weight restrictions for the hierarchy categories' and factors, e.g.
+        //w(health_improvement) >= w(finances), i.e. 1*w(health_improvement) -1*w(finances) >= 0
         data.addWeightConstraint(new Constraint(
                 ConstraintOperator.GEQ,
                 0,
@@ -248,18 +307,21 @@ public class PolishHealthcareSystemsExample {
                 Map.of("health_improvement", 1.0, "satisfaction", -1.0)
         ));
 
+        //setting the minimal weight for "finances" category to 0.2
         data.addWeightConstraint(new Constraint(
                 ConstraintOperator.GEQ,
                 0.2,
                 Map.of("finances", 1.0)
         ));
 
+        //setting the minimal weight for "satisfaction" category to 0.2
         data.addWeightConstraint(new Constraint(
                 ConstraintOperator.GEQ,
                 0.2,
                 Map.of("satisfaction", 1.0)
         ));
 
+        //setting all weights for individual inputs and outputs to be within the range [0.2, 0.5].
         var categoryPrefixes = List.of("h", "f", "s");
         for (var prefix : categoryPrefixes) {
             for (int i = 1; i <= 3; i++) {

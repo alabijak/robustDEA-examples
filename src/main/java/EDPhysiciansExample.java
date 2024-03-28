@@ -27,12 +27,21 @@ public class EDPhysiciansExample {
 
     private void runExample() {
         var printResultUtils = new PrintResultUtils();
+        //initialize physicians' input and output performances, value function shapes,
+        //and custom weight restrictions
         initializeData();
+
+        //calculating the extreme distances to the best DMU for all physicians
         var extremeDistances = new VDEAExtremeDistances();
         var minDistances = extremeDistances.minDistanceForAll(data);
         var maxDistances = extremeDistances.maxDistanceForAll(data);
+
+        //calculating the distribution of the distance to the best physician for all analyzed units
+        //using 100 randomly generated samples and 10 distance intervals.
         var smaaDistance = new VDEASmaaDistance(100, 10);
         var distanceDistribution = smaaDistance.distanceDistribution(data);
+
+        //printing results of the extreme, expected distances and distance distribution
         var distributionHeader = new ArrayList<String>();
         distributionHeader.add("[0.0-0.1]");
         for (int i = 1; i < 10; i++) {
@@ -46,12 +55,18 @@ public class EDPhysiciansExample {
                 alternativeNames,
                 distributionHeader);
 
+        //calculating the extreme efficiency scores for all physicians
         var extremeEfficiencies = new VDEAExtremeEfficiencies();
         var minEfficiencies = extremeEfficiencies.minEfficiencyForAll(data);
         var maxEfficiencies = extremeEfficiencies.maxEfficiencyForAll(data);
+
+        //calculating the distribution of the efficiency scores (and expected efficiencies)
+        //for all physicians
+        //using 100 randomly generated samples and 10 efficiency intervals.
         var smaaEfficiency = new VDEASmaaEfficiency(100, 10);
         var efficiencyDistribution = smaaEfficiency.efficiencyDistribution(data);
 
+        //printing the results of the extreme efficiencies and efficiency distribution to the console
         printResultUtils.printExtremeValuesAndDistribution(minEfficiencies,
                 maxEfficiencies, efficiencyDistribution,
                 "Extreme efficiencies:",
@@ -60,12 +75,17 @@ public class EDPhysiciansExample {
                 alternativeNames,
                 distributionHeader);
 
+        //calculating the extreme efficiency ranks for all physicians
         var extremeRanks = new VDEAExtremeRanks();
         var minRanks = extremeRanks.minRankForAll(data);
         var maxRanks = extremeRanks.maxRankForAll(data);
+
+        //calculating the distribution of the efficiency ranks (and expected ranks)
+        //for all physicians using 100 randomly generated samples.
         var smaaRanks = new VDEASmaaRanks(100);
         var rankDistribution = smaaRanks.rankDistribution(data);
 
+        //printing the results of the extreme ranks and rank distribution to the console
         printResultUtils.printExtremeValuesAndDistribution(
                 minRanks.stream().mapToDouble(x -> x).boxed().toList(),
                 maxRanks.stream().mapToDouble(x -> x).boxed().toList(),
@@ -76,13 +96,20 @@ public class EDPhysiciansExample {
                 alternativeNames,
                 IntStream.range(1, alternativeNames.size() + 1).mapToObj(Objects::toString).toList());
 
+        //verification of the presence of necessary and possible efficiency preference relations
+        //for all pairs of physicians
         var preferenceRelations = new VDEAPreferenceRelations();
         var necessaryRelations = preferenceRelations.checkNecessaryPreferenceForAll(data);
         var possibleRelations = preferenceRelations.checkPossiblePreferenceForAll(data);
+
+        //printing the preference relations matrix to the console
         printResultUtils.printPreferenceRelations(necessaryRelations,
                 possibleRelations,
                 alternativeNames,
                 "Pairwise efficiency preference relations:");
+
+        //calculating the pairwise efficiency outranking indices for all pairs of physicians
+        //and printing them to the console
         var smaaPreferences = new VDEASmaaPreferenceRelations(100);
         printResultUtils.printDistribution(smaaPreferences.peoi(data),
                 "Pairwise efficiency outranking indices:",
@@ -91,9 +118,12 @@ public class EDPhysiciansExample {
     }
 
     private void initializeData() {
+        //initialize physicians' names for printing results
         alternativeNames = IntStream.range(1, 21)
                 .mapToObj(Objects::toString)
                 .toList();
+
+        //initialize input performances
         var inputs = new double[][]{
                 new double[]{2.026, 2.76, 0.92},
                 new double[]{1.959, 2.381, 0.774},
@@ -116,6 +146,8 @@ public class EDPhysiciansExample {
                 new double[]{1.567, 1.487, 0.601},
                 new double[]{1.435, 1.198, 0.568}
         };
+
+        //initialize output performances
         var outputs = new double[][]{
                 new double[]{1.0},
                 new double[]{0.961},
@@ -141,13 +173,17 @@ public class EDPhysiciansExample {
 
         data = new VDEAProblemData(inputs, outputs, List.of("i1", "i2", "i3"), List.of("o1"));
 
+        //add custom weight constraints
         addWeightConstraints();
+
+        //add value function shapes
         addFunctionShapes();
     }
 
     private void addWeightConstraints() {
         for (var factor : List.of("i1", "i2", "i3", "o1")) {
-
+            //for each input and output the weight must be greater than or equal to 0.5
+            //adding constraints in form 1*w1 <= 0.5
             data.addWeightConstraint(new Constraint(
                     ConstraintOperator.LEQ, 0.5, Map.of(factor, 1.0)
             ));
@@ -155,12 +191,17 @@ public class EDPhysiciansExample {
     }
 
     private void addFunctionShapes() {
+        //setting the shape of the value function for input i1
+        //by defining four characteristic points:
+        //[0.6, 1], [0.85, 0.95], [2.0, 0.05], [2.5, 0.0]
         data.setFunctionShape("i1",
                 List.of(new Pair<>(0.6, 1.0),
                         new Pair<>(0.85, 0.95),
                         new Pair<>(2.0, 0.05),
                         new Pair<>(2.5, 0.0)));
 
+        //defining the value functions for the remaining inputs and output
+        //analogously to the input i1.
         data.setFunctionShape("i2",
                 List.of(new Pair<>(0.0, 1.0),
                         new Pair<>(2.0, 0.75),
